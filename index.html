@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ML Engineering Mastery — Roadmap</title>
+  <meta name="description" content="Interactive ML Engineering roadmap with progress tracking" />
+
+  <!-- Google Fonts: distinctive pairing -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─────────────────────────────────────────────
+       DESIGN TOKENS
+    ───────────────────────────────────────────── */
+    :root {
+      --bg:          #080912;
+      --bg2:         #0d0f1e;
+      --glass-fill:  rgba(255, 255, 255, 0.055);
+      --glass-fill2: rgba(255, 255, 255, 0.035);
+      --glass-border:rgba(255, 255, 255, 0.11);
+      --glass-shadow:0 8px 40px rgba(0,0,0,.45);
+      --accent:      #7c6ee0;
+      --accent2:     #4ecdc4;
+      --accent3:     #f5a623;
+      --text:        #e8eaf0;
+      --text-muted:  rgba(232,234,240,.48);
+      --text-done:   rgba(232,234,240,.32);
+      --green:       #5ce65c;
+      --font-head:   'Syne', sans-serif;
+      --font-mono:   'JetBrains Mono', monospace;
+      --radius:      16px;
+      --radius-sm:   10px;
+      --ease:        cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ─────────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-head);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated mesh background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,110,224,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(78,205,196,.12) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 60% 40%, rgba(245,166,35,.07) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+      animation: meshDrift 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes meshDrift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(-1%, 1.5%) scale(1.03); }
+    }
+
+    /* ─────────────────────────────────────────────
+       LAYOUT
+    ───────────────────────────────────────────── */
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 5rem;
+    }
+
+    /* ─────────────────────────────────────────────
+       HEADER
+    ───────────────────────────────────────────── */
+    .site-header {
+      text-align: center;
+      padding: 3rem 0 2.5rem;
+      animation: fadeSlideDown .7s var(--ease-smooth) both;
+    }
+
+    .site-header .eyebrow {
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: .75rem;
+    }
+
+    .site-header h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: .75rem;
+    }
+
+    .site-header .subtitle {
+      color: var(--text-muted);
+      font-size: .95rem;
+      font-weight: 400;
+    }
+
+    /* ─────────────────────────────────────────────
+       TOP BAR: PROGRESS + SYNC
+    ───────────────────────────────────────────── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      animation: fadeSlideDown .7s .1s var(--ease-smooth) both;
+    }
+
+    .progress-wrap {
+      flex: 1;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      color: var(--text-muted);
+      margin-bottom: .4rem;
+    }
+
+    .progress-bar-outer {
+      height: 6px;
+      background: rgba(255,255,255,.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar-inner {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 99px;
+      transition: width .5s var(--ease-smooth);
+      box-shadow: 0 0 12px rgba(124,110,224,.5);
+    }
+
+    .sync-toggle {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    /* pill toggle */
+    .sync-toggle input[type=checkbox] { display: none; }
+    .toggle-pill {
+      width: 32px;
+      height: 18px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid var(--glass-border);
+      border-radius: 99px;
+      position: relative;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .toggle-pill::after {
+      content: '';
+      position: absolute;
+      width: 12px; height: 12px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px; left: 2px;
+      transition: transform .2s var(--ease);
+    }
+    .sync-toggle input:checked ~ .toggle-pill {
+      background: var(--accent);
+    }
+    .sync-toggle input:checked ~ .toggle-pill::after {
+      transform: translateX(14px);
+    }
+
+    /* ─────────────────────────────────────────────
+       GLASS CARD
+    ───────────────────────────────────────────── */
+    .phase-card {
+      position: relative;
+      border-radius: var(--radius);
+      border: 1px solid var(--glass-border);
+      background: var(--glass-fill);
+      box-shadow: var(--glass-shadow);
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+      transition: box-shadow .3s, border-color .3s, transform .3s var(--ease-smooth);
+      animation: cardIn .6s var(--ease-smooth) both;
+    }
+
+    /* backdrop-filter: supported path */
+    @supports (backdrop-filter: blur(1px)) {
+      .phase-card {
+        backdrop-filter: blur(10px) saturate(130%);
+        background: var(--glass-fill);
+      }
+    }
+
+    /* fallback for unsupported browsers */
+    @supports not (backdrop-filter: blur(1px)) {
+      .phase-card {
+        background: rgba(18, 20, 40, 0.88);
+      }
+    }
+
+    .phase-card:hover {
+      box-shadow: 0 16px 56px rgba(0,0,0,.55), 0 0 0 1px rgba(124,110,224,.25);
+      transform: translateY(-2px);
+    }
+
+    /* Animated fog overlay */
+    .phase-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse 60% 40% at 30% 50%, rgba(124,110,224,.07) 0%, transparent 70%);
+      animation: fogPulse 8s ease-in-out infinite alternate;
+      opacity: 1;
+      transition: opacity .6s;
+      z-index: 0;
+    }
+
+    .phase-card.all-done::before { opacity: 0; }
+
+    @keyframes fogPulse {
+      from { transform: translate(-5%, -5%) scale(1); opacity: .8; }
+      to   { transform: translate(8%, 6%) scale(1.15); opacity: 1; }
+    }
+
+    /* stagger card animations */
+    .phase-card:nth-child(1)  { animation-delay: .05s; }
+    .phase-card:nth-child(2)  { animation-delay: .10s; }
+    .phase-card:nth-child(3)  { animation-delay: .15s; }
+    .phase-card:nth-child(4)  { animation-delay: .20s; }
+    .phase-card:nth-child(5)  { animation-delay: .25s; }
+    .phase-card:nth-child(6)  { animation-delay: .30s; }
+    .phase-card:nth-child(7)  { animation-delay: .35s; }
+    .phase-card:nth-child(8)  { animation-delay: .40s; }
+    .phase-card:nth-child(9)  { animation-delay: .45s; }
+    .phase-card:nth-child(10) { animation-delay: .50s; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─────────────────────────────────────────────
+       PHASE HEADER (collapsible button)
+    ───────────────────────────────────────────── */
+    .phase-header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.2rem 1.5rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      color: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .phase-header:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+      border-radius: var(--radius);
+    }
+
+    .phase-num {
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      font-weight: 500;
+      color: var(--accent2);
+      background: rgba(78,205,196,.1);
+      border: 1px solid rgba(78,205,196,.2);
+      border-radius: 6px;
+      padding: .2rem .5rem;
+      flex-shrink: 0;
+      letter-spacing: .05em;
+    }
+
+    .phase-title {
+      flex: 1;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .phase-subtitle {
+      display: block;
+      font-size: .72rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: .15rem;
+      font-family: var(--font-mono);
+    }
+
+    .phase-meta {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      flex-shrink: 0;
+    }
+
+    .phase-count {
+      font-family: var(--font-mono);
+      font-size: .68rem;
+      color: var(--text-muted);
+    }
+
+    .phase-chevron {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: transform .28s var(--ease-smooth), color .2s;
+    }
+
+    .phase-card.open .phase-chevron {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+
+    /* done badge on header */
+    .phase-all-done-badge {
+      font-family: var(--font-mono);
+      font-size: .62rem;
+      color: var(--green);
+      background: rgba(92,230,92,.1);
+      border: 1px solid rgba(92,230,92,.2);
+      border-radius: 6px;
+      padding: .2rem .45rem;
+      opacity: 0;
+      transform: scale(.85);
+      transition: opacity .3s, transform .3s var(--ease);
+    }
+
+    .phase-card.all-done .phase-all-done-badge {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* mini progress ring */
+    .ring-wrap { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
+    .ring-wrap svg { transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: rgba(255,255,255,.08); stroke-width: 3; }
+    .ring-fg { fill: none; stroke: var(--accent2); stroke-width: 3; stroke-linecap: round;
+               transition: stroke-dashoffset .5s var(--ease-smooth); }
+    .ring-pct {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono);
+      font-size: .52rem;
+      color: var(--text-muted);
+    }
+
+    /* ─────────────────────────────────────────────
+       COLLAPSIBLE BODY
+    ───────────────────────────────────────────── */
+    .phase-body {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height .45s var(--ease-smooth);
+    }
+
+    .phase-card.open .phase-body {
+      max-height: 2000px; /* generous max; CSS-only collapse trick */
+    }
+
+    .phase-body-inner {
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    /* ─────────────────────────────────────────────
+       SECTION GROUPS within a phase
+    ───────────────────────────────────────────── */
+    .section-group { margin-bottom: 1.25rem; }
+    .section-group:last-child { margin-bottom: 0; }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .6rem;
+      padding-bottom: .35rem;
+      border-bottom: 1px solid rgba(124,110,224,.18);
+    }
+
+    /* ─────────────────────────────────────────────
+       CHECK ITEM
+    ───────────────────────────────────────────── */
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .55rem .6rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background .18s;
+      position: relative;
+      /* roving tabindex: all items focusable via arrow keys */
+    }
+
+    .check-item:hover { background: rgba(255,255,255,.04); }
+
+    .check-item:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    /* The visual checkbox */
+    .check-box {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 1.5px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.04);
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition:
+        background .22s var(--ease),
+        border-color .22s,
+        transform .22s var(--ease);
+    }
+
+    .check-item[aria-checked="true"] .check-box {
+      background: var(--green);
+      border-color: var(--green);
+      transform: scale(1.1);
+      box-shadow: 0 0 8px rgba(92,230,92,.4);
+    }
+
+    .check-box svg {
+      width: 10px;
+      height: 10px;
+      color: #000;
+      opacity: 0;
+      transform: scale(.5);
+      transition: opacity .15s .05s, transform .2s var(--ease);
+    }
+
+    .check-item[aria-checked="true"] .check-box svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Item text */
+    .check-text {
+      flex: 1;
+      font-size: .88rem;
+      line-height: 1.5;
+      transition: color .3s, opacity .3s;
+    }
+
+    .check-item[aria-checked="true"] .check-text {
+      color: var(--text-done);
+      text-decoration: line-through;
+      text-decoration-color: rgba(232,234,240,.2);
+    }
+
+    /* IMPORTANT marker */
+    .important-tag {
+      font-family: var(--font-mono);
+      font-size: .58rem;
+      color: var(--accent3);
+      background: rgba(245,166,35,.1);
+      border: 1px solid rgba(245,166,35,.2);
+      border-radius: 4px;
+      padding: .1rem .35rem;
+      margin-left: .35rem;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    /* Timestamp */
+    .check-ts {
+      font-family: var(--font-mono);
+      font-size: .6rem;
+      color: var(--text-muted);
+      opacity: 0;
+      white-space: nowrap;
+      transition: opacity .3s;
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .check-item[aria-checked="true"] .check-ts { opacity: 1; }
+
+    /* Checkpoint row */
+    .checkpoint-row {
+      margin-top: 1.25rem;
+      padding: .9rem 1rem;
+      border-radius: var(--radius-sm);
+      background: rgba(124,110,224,.08);
+      border: 1px solid rgba(124,110,224,.18);
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      color: rgba(196,188,255,.75);
+      line-height: 1.6;
+    }
+
+    .checkpoint-row .cp-label {
+      font-weight: 600;
+      color: var(--accent);
+      display: block;
+      margin-bottom: .25rem;
+    }
+
+    /* Bulk mark row */
+    .bulk-row {
+      display: flex;
+      gap: .5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,.06);
+      margin-top: 1rem;
+    }
+
+    .btn-bulk {
+      font-family: var(--font-mono);
+      font-size: .68rem;
+      padding: .35rem .8rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,.05);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+
+    .btn-bulk:hover {
+      background: rgba(255,255,255,.1);
+      color: var(--text);
+      border-color: rgba(255,255,255,.2);
+    }
+
+    .btn-bulk:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    /* ─────────────────────────────────────────────
+       TOAST / SNACKBAR
+    ───────────────────────────────────────────── */
+    #toast-region {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: rgba(20,22,44,.92);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: .65rem 1.1rem;
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      pointer-events: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+      animation: toastIn .3s var(--ease) both;
+      backdrop-filter: blur(10px);
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px) scale(.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .toast.removing {
+      animation: toastOut .25s var(--ease-smooth) both;
+    }
+
+    @keyframes toastOut {
+      to { opacity: 0; transform: translateY(8px) scale(.95); }
+    }
+
+    .toast-undo {
+      color: var(--accent2);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      background: none;
+      border: none;
+      font: inherit;
+      padding: 0;
+    }
+
+    /* ─────────────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .phase-header { padding: 1rem; }
+      .phase-body-inner { padding: 0 1rem 1rem; }
+      .site-header { padding: 2rem 0 1.5rem; }
+      .ring-wrap { display: none; }
+    }
+
+    /* ─────────────────────────────────────────────
+       REDUCED MOTION
+    ───────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       MISC UTILS
+    ───────────────────────────────────────────── */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* noscript fallback */
+    noscript .phase-card { animation: none; }
+    noscript .phase-body { max-height: none; }
+    noscript .phase-header { cursor: default; }
+  </style>
+</head>
+
+<body>
+  <!-- ── ARIA live region for state change announcements ── -->
+  <div id="live-region" role="status" aria-live="polite" aria-atomic="true"
+       style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);"></div>
+
+  <!-- ── TOAST region ── -->
+  <div id="toast-region" aria-label="Notifications"></div>
+
+  <div class="app">
+    <!-- HEADER -->
+    <header class="site-header">
+      <p class="eyebrow">10 Phases · Builder Path</p>
+      <h1>ML Engineering<br/>Mastery</h1>
+      <p class="subtitle">Tick off each concept as you conquer it. No shortcuts.</p>
+    </header>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Overall Progress</span>
+          <span id="pct-label">0%</span>
+        </div>
+        <div class="progress-bar-outer">
+          <div class="progress-bar-inner" id="progress-bar"
+               role="progressbar"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+               aria-label="Overall roadmap progress"
+               style="width:0%"></div>
+        </div>
+      </div>
+      <label class="sync-toggle" title="Sync progress to server (stub)">
+        <input type="checkbox" id="sync-checkbox" />
+        <span class="toggle-pill" role="switch" aria-checked="false"
+              aria-label="Sync to server"></span>
+        <span>Sync</span>
+      </label>
+    </div>
+
+    <!-- PHASE CARDS rendered by JS below -->
+    <main id="roadmap-root" aria-label="ML Engineering Roadmap"></main>
+  </div>
+
+  <!-- ── NOSCRIPT fallback ── -->
+  <noscript>
+    <style>
+      .phase-body { max-height: none !important; }
+      .phase-header { pointer-events: none; }
+      .phase-chevron, .phase-meta, .top-bar { display: none; }
+    </style>
+    <p style="text-align:center;color:#aaa;font-family:sans-serif;padding:1rem">
+      JavaScript is disabled. Showing static view — toggle functionality requires JS.
+    </p>
+  </noscript>
+
+  <script>
+  /* ════════════════════════════════════════════════════════════
+     1. ROADMAP DATA
+     Parsed from ml_roadmap.txt into a structured tree.
+     In production, this would be imported from roadmapData.js
+     (generated at build time from the .txt source).
+  ════════════════════════════════════════════════════════════ */
+  const PHASES = [
+    {
+      id: "phase-00",
+      num: "00",
+      title: "Prerequisites",
+      subtitle: "Foundation Layer: Math + Python",
+      checkpoint: "You can implement linear regression using only NumPy — no sklearn.",
+      sections: [
+        {
+          label: "Linear Algebra",
+          items: [
+            { id: "la-1", text: "Vectors & matrices — shapes, notation" },
+            { id: "la-2", text: "Matrix multiplication & dot product" },
+            { id: "la-3", text: "Eigenvalues & eigenvectors (intuition)" },
+            { id: "la-4", text: "Tensor dimensions & reshaping" },
+          ]
+        },
+        {
+          label: "Calculus",
+          items: [
+            { id: "ca-1", text: "Derivatives & partial derivatives" },
+            { id: "ca-2", text: "Chain rule — this IS backpropagation" },
+            { id: "ca-3", text: "Gradient — direction of steepest ascent" },
+          ]
+        },
+        {
+          label: "Probability & Statistics",
+          items: [
+            { id: "ps-1", text: "Gaussian / Normal distribution" },
+            { id: "ps-2", text: "Expectation, variance, standard deviation" },
+            { id: "ps-3", text: "Likelihood & cross-entropy loss" },
+          ]
+        },
+        {
+          label: "NumPy for ML",
+          items: [
+            { id: "np-1", text: "Vectorization — no Python loops in ML code" },
+            { id: "np-2", text: "Broadcasting rules" },
+            { id: "np-3", text: "Advanced indexing tricks" },
+            { id: "np-4", text: "Memory layout & efficiency" },
+          ]
+        }
+      ]
+    },
+    {
+      id: "phase-01",
+      num: "01",
+      title: "From-Scratch ML",
+      subtitle: "Classical algorithms — no sklearn allowed",
+      checkpoint: "You can train models without any ML library.\nYou understand gradient descent deeply.",
+      sections: [
+        {
+          label: "Study Repo",
+          items: [
+            { id: "01-r1", text: "homemade-machine-learning (GitHub)" },
+          ]
+        },
+        {
+          label: "Implement",
+          items: [
+            { id: "01-i1", text: "Linear Regression — MSE cost + gradient descent" },
+            { id: "01-i2", text: "Multivariate Linear Regression (matrix form)" },
+            { id: "01-i3", text: "Logistic Regression — sigmoid + decision boundary" },
+            { id: "01-i4", text: "K-Means Clustering — centroid optimization" },
+            { id: "01-i5", text: "Gaussian Anomaly Detection — PDF-based" },
+          ]
+        },
+        {
+          label: "Understand",
+          items: [
+            { id: "01-u1", text: "Cost functions & their partial derivatives" },
+            { id: "01-u2", text: "Data leakage — the silent killer of ML projects", important: true },
+            { id: "01-u3", text: "Bias-variance tradeoff + evaluation metrics" },
+          ]
+        }
+      ]
+    },
+    {
+      id: "phase-02",
+      num: "02",
+      title: "Deep Learning Fundamentals",
+      subtitle: "Neural networks from scratch — NumPy only",
+      checkpoint: "You understand backpropagation completely.\nYou can write it from scratch.",
+      sections: [
+        {
+          label: "Study Repo",
+          items: [{ id: "02-r1", text: "numpy-deep-learning (GitHub)" }]
+        },
+        {
+          label: "Learn",
+          items: [
+            { id: "02-l1", text: "Forward pass — layer by layer computation" },
+            { id: "02-l2", text: "Backward pass — chain rule at scale" },
+            { id: "02-l3", text: "Activation functions — ReLU, sigmoid, tanh" },
+            { id: "02-l4", text: "Loss functions — cross-entropy, MSE" },
+            { id: "02-l5", text: "Optimizers — SGD, Adam, RMSProp" },
+            { id: "02-l6", text: "Weight initialization strategies" },
+          ]
+        },
+        {
+          label: "Build",
+          items: [
+            { id: "02-b1", text: "MLP for MNIST (~94% accuracy, pure NumPy)" },
+            { id: "02-b2", text: "Minimal neural network framework from scratch" },
+          ]
+        }
+      ]
+    },
+    {
+      id: "phase-03",
+      num: "03",
+      title: "PyTorch Mastery",
+      subtitle: "Modern deep learning — autograd + GPU",
+      checkpoint: "You can train deep models from scratch in PyTorch.\nAutograd is no longer magic.",
+      sections: [
+        {
+          label: "Core Concepts",
+          items: [
+            { id: "03-c1", text: "Autograd — how PyTorch computes gradients" },
+            { id: "03-c2", text: "Tensor operations & GPU acceleration (.cuda())" },
+            { id: "03-c3", text: "DataLoaders, Datasets, transforms" },
+            { id: "03-c4", text: "Training loop — forward, loss, backward, step" },
+            { id: "03-c5", text: "Model checkpointing & loading" },
+            { id: "03-c6", text: "Mixed precision training (fp16 / bf16)" },
+          ]
+        },
+        {
+          label: "Projects",
+          items: [
+            { id: "03-p1", text: "CNN for image classification (CIFAR-10)" },
+            { id: "03-p2", text: "RNN / LSTM for text generation" },
+            { id: "03-p3", text: "Transfer learning with pretrained ResNet" },
+          ]
+        }
+      ]
+    },
+    {
+      id: "phase-04",
+      num: "04",
+      title: "Transformers & LLMs",
+      subtitle: "Attention is all you need — for real",
+      checkpoint: "You understand how ChatGPT works at the weights level.\nYou could build a tiny one.",
+      sections: [
+        {
+          label: "Study Repos",
+          items: [
+            { id: "04-r1", text: "LLMs-from-scratch by Sebastian Raschka (GitHub)" },
+            { id: "04-r2", text: "The Annotated Transformer — Harvard NLP (line-by-line)" },
+          ]
+        },
+        {
+          label: "Learn",
+          items: [
+            { id: "04-l1", text: "Tokenization — BPE, tiktoken" },
+            { id: "04-l2", text: "Token embeddings + positional encoding" },
+            { id: "04-l3", text: "Scaled Dot-Product Attention: softmax(QKᵀ / √dk) × V" },
+            { id: "04-l4", text: "Multi-head attention — why multiple heads?" },
+            { id: "04-l5", text: "Causal masking (decoder-only / GPT style)" },
+            { id: "04-l6", text: "LayerNorm, GELU, Residual connections" },
+            { id: "04-l7", text: "Full transformer block architecture" },
+            { id: "04-l8", text: "Pretraining loss — cross-entropy on next token" },
+          ]
+        },
+        {
+          label: "Implement",
+          items: [
+            { id: "04-i1", text: "GPT-style model from scratch in PyTorch" },
+            { id: "04-i2", text: "Small text generator — train on custom corpus" },
+            { id: "04-i3", text: "Fine-tune with LoRA (Parameter-Efficient Fine-Tuning)" },
+          ]
+        }
+      ]
+    },
+    {
+      id: "phase-05",
+      num: "05",
+      title: "Paper Implementations",
+      subtitle: "Research to code. The real engineering test.",
+      checkpoint: "You can open an ML paper and turn it into working code.\nThis skill is rare.",
+      sections: [
+        {
+          label: "Study Repos",
+          items: [
+            { id: "05-r1", text: "lucidrains (GitHub) — pick 2-3 paper repos" },
+            { id: "05-r2", text: "vision_transformer — official JAX/Flax ViT" },
+            { id: "05-r3", text: "Diffusion models from scratch" },
+          ]
+        },
+        {
+          label: "Skills",
+          items: [
+            { id: "05-s1", text: "Read a ML paper end-to-end (math + experiments)" },
+            { id: "05-s2", text: "Einstein summation — einsum for tensor contractions" },
+            { id: "05-s3", text: "Vision Transformer — patch embeddings, no convolutions" },
+            { id: "05-s4", text: "MLP-Mixer — spatial + channel mixing (linear in pixels)" },
+            { id: "05-s5", text: "Implement a paper from scratch without tutorial help" },
+            { id: "05-s6", text: "Debug deep models — gradient flow, NaN, dead ReLU" },
+          ]
+        }
+      ]
+    },
+    {
+      id: "phase-06",
+      num: "06",
+      title: "Computer Vision (YOLO)",
+      subtitle: "Production-grade object detection",
+      checkpoint: "You can build and deploy a real-time object detection system.",
+      sections: [
+        {
+          label: "Study Repo",
+          items: [{ id: "06-r1", text: "ultralytics / YOLO (GitHub) — up to YOLOv11" }]
+        },
+        {
+          label: "Learn",
+          items: [
+            { id: "06-l1", text: "FPN + PANet — multi-scale feature extraction" },
+            { id: "06-l2", text: "Task-Aligned Learning (TAL) — dynamic anchor assignment" },
+            { id: "06-l3", text: "Distributional Bounding Box Loss" },
+            { id: "06-l4", text: "TensorRT / ONNX export for edge inference" },
+            { id: "06-l5", text: "SPPF — Spatial Pyramid Pooling Fast" },
+          ]
+        },
+        {
+          label: "Build",
+          items: [
+            { id: "06-b1", text: "Train YOLO on a custom dataset" },
+            { id: "06-b2", text: "Evaluate with mAP, precision, recall curves" },
+          ]
+        }
+      ]
+    },
+    {
+      id: "phase-07",
+      num: "07",
+      title: "Reinforcement Learning",
+      subtitle: "Agents that learn by doing",
+      checkpoint: "You can train RL agents and read algorithm diffs in a single file.",
+      sections: [
+        {
+          label: "Study Repos",
+          items: [
+            { id: "07-r1", text: "CleanRL — single-file implementations (start here)" },
+            { id: "07-r2", text: "Stable Baselines3 — modular, tuned hyperparams" },
+          ]
+        },
+        {
+          label: "Algorithms",
+          items: [
+            { id: "07-a1", text: "Markov Decision Processes — states, actions, rewards" },
+            { id: "07-a2", text: "Q-Learning & DQN — Deep Q-Network" },
+            { id: "07-a3", text: "Policy Gradient methods — REINFORCE" },
+            { id: "07-a4", text: "PPO — Proximal Policy Optimization" },
+            { id: "07-a5", text: "SAC — Soft Actor-Critic (off-policy)" },
+            { id: "07-a6", text: "Environment interaction — OpenAI Gymnasium" },
+          ]
+        },
+        {
+          label: "Build",
+          items: [
+            { id: "07-b1", text: "Train PPO agent on CartPole / Atari" },
+            { id: "07-b2", text: "Compare CleanRL vs SB3 on same environment" },
+          ]
+        }
+      ]
+    },
+    {
+      id: "phase-08",
+      num: "08",
+      title: "RAG & Agentic AI",
+      subtitle: "Dynamic, data-aware AI applications",
+      checkpoint: "You can build production-grade AI applications — not just demos.",
+      sections: [
+        {
+          label: "Study Repos",
+          items: [
+            { id: "08-r1", text: "RAG_Techniques (GitHub) — exhaustive RAG hub" },
+            { id: "08-r2", text: "Microsoft GraphRAG — knowledge graph retrieval" },
+            { id: "08-r3", text: "RAPTOR — tree-organized multi-hop retrieval" },
+          ]
+        },
+        {
+          label: "RAG Techniques",
+          items: [
+            { id: "08-t1", text: "Naive RAG — chunk, embed, retrieve, generate" },
+            { id: "08-t2", text: "HyDE — Hypothetical Document Embedding" },
+            { id: "08-t3", text: "Fusion Retrieval — vector search + cross-encoder rerank" },
+            { id: "08-t4", text: "GraphRAG — entity extraction and community summaries" },
+            { id: "08-t5", text: "HyPE — precomputed hypothetical query embeddings" },
+            { id: "08-t6", text: "Vector databases — Chroma, Pinecone, Weaviate" },
+          ]
+        },
+        {
+          label: "Agentic AI",
+          items: [
+            { id: "08-ag1", text: "Multi-agent orchestration patterns" },
+            { id: "08-ag2", text: "Tool use — function calling, API integration" },
+            { id: "08-ag3", text: "Evaluation-Driven Development — Logfire / LangSmith", important: true },
+          ]
+        },
+        {
+          label: "Build",
+          items: [
+            { id: "08-b1", text: "Document Q&A system with Advanced RAG" },
+            { id: "08-b2", text: "Autonomous research agent with tool use" },
+          ]
+        }
+      ]
+    },
+    {
+      id: "phase-09",
+      num: "09",
+      title: "Production ML Engineering",
+      subtitle: "MLOps — from script to scalable system",
+      checkpoint: "You are an AI Engineer, not just an AI user.\nYou build systems, not just models.",
+      sections: [
+        {
+          label: "MLOps Stack",
+          items: [
+            { id: "09-m1", text: "MLflow — experiment tracking, parameters, artifacts" },
+            { id: "09-m2", text: "Ray — distributed training without changing Python logic" },
+            { id: "09-m3", text: "CI/CD with GitHub Actions — auto train + evaluate on PR" },
+            { id: "09-m4", text: "Model serving & inference APIs" },
+            { id: "09-m5", text: "Monitoring & drift detection — Logfire / Prometheus" },
+            { id: "09-m6", text: "LiteLLM Proxy — load balancing across LLM providers" },
+          ]
+        },
+        {
+          label: "Infrastructure",
+          items: [
+            { id: "09-i1", text: "Containerization with Docker" },
+            { id: "09-i2", text: "Cloud clusters — AWS / GCP / Anyscale" },
+            { id: "09-i3", text: "Kubernetes for ML serving" },
+          ]
+        },
+        {
+          label: "Best Practices",
+          items: [
+            { id: "09-bp1", text: '"Golden Set" testing — systematic evaluation, not vibes', important: true },
+            { id: "09-bp2", text: "System architecture > model choice (senior-level insight)" },
+            { id: "09-bp3", text: "Weekly GitHub commits with clear READMEs" },
+          ]
+        }
+      ]
+    }
+  ];
+
+  /* ════════════════════════════════════════════════════════════
+     2. PERSISTENCE  —  localStorage + server sync stub
+  ════════════════════════════════════════════════════════════ */
+  const STORAGE_KEY = "mlRoadmap.readStates";
+
+  /** Load saved state from localStorage */
+  function loadState() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    } catch {
+      return {};
+    }
+  }
+
+  /** Persist state to localStorage */
+  function saveState(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      showToast("⚠️ Storage full — progress saved in memory only.");
+    }
+  }
+
+  /**
+   * Sync stub — swap this for your real API call.
+   * Shape: POST /api/user/readStates  { readStates: {...} }
+   */
+  async function syncToServer(state) {
+    console.log("[sync] Pushing read states to server:", state);
+    // Real implementation:
+    // await fetch('/api/user/readStates', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ readStates: state })
+    // });
+  }
+
+  /* Debounce helper */
+  function debounce(fn, ms) {
+    let t;
+    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+  }
+
+  const debouncedSync = debounce(syncToServer, 800);
+
+  // Live state (mutated in place; serialised on change)
+  let readStates = loadState();
+  let syncEnabled = false;
+
+  /* ════════════════════════════════════════════════════════════
+     3. ANALYTICS hook  (window.dataLayer / custom)
+  ════════════════════════════════════════════════════════════ */
+  function emitAnalytics(event, payload) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event, ...payload });
+    // Custom hook: window.dispatchEvent(new CustomEvent('mlRoadmap:track', { detail: payload }));
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     4. TOAST system
+  ════════════════════════════════════════════════════════════ */
+  const toastRegion = document.getElementById("toast-region");
+  const liveRegion  = document.getElementById("live-region");
+
+  function showToast(msg, undoFn = null, duration = 3500) {
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.setAttribute("role", "status");
+    el.innerHTML = `<span>${msg}</span>`;
+    if (undoFn) {
+      const btn = document.createElement("button");
+      btn.className = "toast-undo";
+      btn.textContent = "Undo";
+      btn.setAttribute("aria-label", "Undo last action");
+      btn.onclick = () => { undoFn(); removeToast(el); };
+      el.appendChild(btn);
+    }
+    toastRegion.appendChild(el);
+    const timer = setTimeout(() => removeToast(el), duration);
+    el._timer = timer;
+  }
+
+  function removeToast(el) {
+    clearTimeout(el._timer);
+    el.classList.add("removing");
+    el.addEventListener("animationend", () => el.remove(), { once: true });
+  }
+
+  function announce(msg) {
+    liveRegion.textContent = "";
+    requestAnimationFrame(() => { liveRegion.textContent = msg; });
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     5. PROGRESS  recalculation
+  ════════════════════════════════════════════════════════════ */
+  function getAllItemIds() {
+    return PHASES.flatMap(p => p.sections.flatMap(s => s.items.map(i => i.id)));
+  }
+
+  function updateProgress() {
+    const allIds = getAllItemIds();
+    const doneCount = allIds.filter(id => readStates[id]?.done).length;
+    const pct = Math.round((doneCount / allIds.length) * 100);
+
+    const bar = document.getElementById("progress-bar");
+    const lbl = document.getElementById("pct-label");
+    if (bar) {
+      bar.style.width = pct + "%";
+      bar.setAttribute("aria-valuenow", pct);
+    }
+    if (lbl) lbl.textContent = pct + "%";
+
+    // Update per-phase rings
+    PHASES.forEach(phase => {
+      updatePhaseRing(phase.id);
+    });
+  }
+
+  function getPhaseStats(phaseId) {
+    const phase = PHASES.find(p => p.id === phaseId);
+    if (!phase) return { done: 0, total: 0 };
+    const items = phase.sections.flatMap(s => s.items);
+    const done = items.filter(i => readStates[i.id]?.done).length;
+    return { done, total: items.length };
+  }
+
+  function updatePhaseRing(phaseId) {
+    const { done, total } = getPhaseStats(phaseId);
+    const pct = total ? done / total : 0;
+    const circumference = 2 * Math.PI * 12; // r=12
+    const offset = circumference * (1 - pct);
+
+    const ring = document.querySelector(`[data-ring="${phaseId}"]`);
+    if (ring) ring.style.strokeDashoffset = offset;
+
+    const ringPct = document.querySelector(`[data-ring-pct="${phaseId}"]`);
+    if (ringPct) ringPct.textContent = Math.round(pct * 100) + "%";
+
+    const card = document.getElementById(phaseId);
+    if (card) {
+      if (done === total && total > 0) {
+        card.classList.add("all-done");
+      } else {
+        card.classList.remove("all-done");
+      }
+    }
+
+    // Update count label
+    const countEl = document.querySelector(`[data-phase-count="${phaseId}"]`);
+    if (countEl) countEl.textContent = `${done}/${total}`;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     6. TOGGLE  single item
+  ════════════════════════════════════════════════════════════ */
+  function toggleItem(itemId, el) {
+    const wasDone = !!readStates[itemId]?.done;
+    const nowDone = !wasDone;
+    const ts = nowDone ? new Date().toISOString() : null;
+
+    // Snapshot for undo
+    const prev = readStates[itemId];
+
+    readStates[itemId] = nowDone ? { done: true, ts } : { done: false, ts: null };
+    saveState(readStates);
+
+    if (syncEnabled) debouncedSync(readStates);
+
+    // Update DOM
+    el.setAttribute("aria-checked", nowDone ? "true" : "false");
+    const tsEl = el.querySelector(".check-ts");
+    if (tsEl) {
+      tsEl.textContent = nowDone
+        ? "done " + new Date(ts).toLocaleDateString("en-IN", { day:"2-digit", month:"short" })
+        : "";
+    }
+
+    updateProgress();
+
+    const label = el.querySelector(".check-text")?.textContent?.trim().slice(0, 40);
+    announce(nowDone ? `Marked as done: ${label}` : `Marked as unread: ${label}`);
+
+    emitAnalytics("roadmap_item_toggle", { itemId, done: nowDone });
+
+    showToast(
+      nowDone ? "✓ Marked as done" : "↩ Marked as unread",
+      () => {
+        // Undo: restore previous state
+        readStates[itemId] = prev || { done: false, ts: null };
+        saveState(readStates);
+        el.setAttribute("aria-checked", wasDone ? "true" : "false");
+        const tsEl2 = el.querySelector(".check-ts");
+        if (tsEl2) tsEl2.textContent = prev?.ts
+          ? "done " + new Date(prev.ts).toLocaleDateString("en-IN", { day:"2-digit", month:"short" })
+          : "";
+        updateProgress();
+      }
+    );
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     7. BULK  toggle for a phase
+  ════════════════════════════════════════════════════════════ */
+  function bulkTogglePhase(phaseId, markDone) {
+    const phase = PHASES.find(p => p.id === phaseId);
+    if (!phase) return;
+    const ts = new Date().toISOString();
+    const prev = {};
+
+    phase.sections.flatMap(s => s.items).forEach(item => {
+      prev[item.id] = readStates[item.id];
+      readStates[item.id] = markDone ? { done: true, ts } : { done: false, ts: null };
+    });
+
+    saveState(readStates);
+    if (syncEnabled) debouncedSync(readStates);
+
+    // Re-render all items in phase
+    const card = document.getElementById(phaseId);
+    if (card) {
+      card.querySelectorAll(".check-item").forEach(el => {
+        const id = el.dataset.itemId;
+        el.setAttribute("aria-checked", readStates[id]?.done ? "true" : "false");
+        const tsEl = el.querySelector(".check-ts");
+        if (tsEl) tsEl.textContent = readStates[id]?.done
+          ? "done " + new Date(ts).toLocaleDateString("en-IN", { day:"2-digit", month:"short" })
+          : "";
+      });
+    }
+
+    updateProgress();
+    announce(markDone ? "Phase marked as complete" : "Phase marked as unread");
+    showToast(
+      markDone ? "✓ Phase marked as complete" : "↩ Phase cleared",
+      () => {
+        // Undo
+        Object.assign(readStates, prev);
+        saveState(readStates);
+        const card2 = document.getElementById(phaseId);
+        if (card2) {
+          card2.querySelectorAll(".check-item").forEach(el => {
+            const id = el.dataset.itemId;
+            el.setAttribute("aria-checked", readStates[id]?.done ? "true" : "false");
+            const tsEl = el.querySelector(".check-ts");
+            if (tsEl) tsEl.textContent = readStates[id]?.ts
+              ? "done " + new Date(readStates[id].ts).toLocaleDateString("en-IN", { day:"2-digit", month:"short" })
+              : "";
+          });
+        }
+        updateProgress();
+      }
+    );
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     8. KEYBOARD  navigation within a phase (roving tabindex)
+  ════════════════════════════════════════════════════════════ */
+  function attachRovingTabindex(listEl) {
+    const items = [...listEl.querySelectorAll(".check-item")];
+    if (!items.length) return;
+
+    items.forEach((item, i) => {
+      item.setAttribute("tabindex", i === 0 ? "0" : "-1");
+      item.addEventListener("keydown", (e) => {
+        let next = null;
+        if (e.key === "ArrowDown") next = items[i + 1];
+        if (e.key === "ArrowUp")   next = items[i - 1];
+        if (next) {
+          e.preventDefault();
+          items.forEach(it => it.setAttribute("tabindex", "-1"));
+          next.setAttribute("tabindex", "0");
+          next.focus();
+        }
+      });
+    });
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     9. RENDER
+  ════════════════════════════════════════════════════════════ */
+  const circumference = 2 * Math.PI * 12;
+
+  function renderCheckItem(item) {
+    const isDone = !!readStates[item.id]?.done;
+    const ts = readStates[item.id]?.ts;
+    const tsStr = ts
+      ? "done " + new Date(ts).toLocaleDateString("en-IN", { day:"2-digit", month:"short" })
+      : "";
+
+    const importantTag = item.important
+      ? `<span class="important-tag" aria-label="Important">IMPORTANT</span>`
+      : "";
+
+    return `
+      <div class="check-item"
+           role="checkbox"
+           aria-checked="${isDone}"
+           aria-label="${item.text}"
+           tabindex="0"
+           data-item-id="${item.id}"
+      >
+        <span class="check-box" aria-hidden="true">
+          <!-- Checkmark SVG -->
+          <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <polyline points="1.5,5 4,7.5 8.5,2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="check-text">${item.text}${importantTag}</span>
+        <span class="check-ts" aria-label="${isDone ? tsStr : ''}">${tsStr}</span>
+      </div>
+    `;
+  }
+
+  function renderSectionGroup(section) {
+    return `
+      <div class="section-group">
+        <div class="section-label">${section.label}</div>
+        ${section.items.map(renderCheckItem).join("")}
+      </div>
+    `;
+  }
+
+  function renderPhaseCard(phase) {
+    const { done, total } = getPhaseStats(phase.id);
+    const pct = total ? done / total : 0;
+    const offset = circumference * (1 - pct);
+
+    return `
+      <article class="phase-card${done === total && total > 0 ? ' all-done' : ''}"
+               id="${phase.id}"
+               aria-labelledby="${phase.id}-title">
+        <!-- Phase header / toggle -->
+        <button class="phase-header"
+                aria-expanded="false"
+                aria-controls="${phase.id}-body"
+                id="${phase.id}-title">
+          <span class="phase-num">PH${phase.num}</span>
+          <span class="phase-title">
+            ${phase.title}
+            <span class="phase-subtitle">${phase.subtitle}</span>
+          </span>
+          <span class="phase-meta">
+            <span class="phase-all-done-badge" aria-label="Phase complete">✓ Done</span>
+            <span class="phase-count" data-phase-count="${phase.id}" aria-label="Items done">${done}/${total}</span>
+            <!-- Mini progress ring -->
+            <span class="ring-wrap" aria-hidden="true">
+              <svg width="32" height="32" viewBox="0 0 32 32">
+                <circle class="ring-bg" cx="16" cy="16" r="12"/>
+                <circle class="ring-fg"
+                        cx="16" cy="16" r="12"
+                        stroke-dasharray="${circumference}"
+                        stroke-dashoffset="${offset}"
+                        data-ring="${phase.id}"
+                        style="stroke-dasharray:${circumference};stroke-dashoffset:${offset}"/>
+              </svg>
+              <span class="ring-pct" data-ring-pct="${phase.id}">${Math.round(pct*100)}%</span>
+            </span>
+            <!-- Chevron -->
+            <span class="phase-chevron" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <polyline points="3,5 8,11 13,5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </span>
+        </button>
+
+        <!-- Collapsible body -->
+        <div class="phase-body" id="${phase.id}-body" role="region" aria-labelledby="${phase.id}-title">
+          <div class="phase-body-inner">
+            ${phase.sections.map(renderSectionGroup).join("")}
+
+            <!-- Checkpoint -->
+            <div class="checkpoint-row">
+              <span class="cp-label">✦ CHECKPOINT ${phase.num}</span>
+              ${phase.checkpoint.split("\n").map(l => `<span>${l}</span><br/>`).join("")}
+            </div>
+
+            <!-- Bulk controls -->
+            <div class="bulk-row">
+              <button class="btn-bulk"
+                      data-bulk-phase="${phase.id}"
+                      data-bulk-done="true"
+                      aria-label="Mark all items in this phase as done">
+                Mark all done
+              </button>
+              <button class="btn-bulk"
+                      data-bulk-phase="${phase.id}"
+                      data-bulk-done="false"
+                      aria-label="Clear all items in this phase">
+                Clear phase
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     10. MOUNT
+  ════════════════════════════════════════════════════════════ */
+  function mount() {
+    const root = document.getElementById("roadmap-root");
+    root.innerHTML = PHASES.map(renderPhaseCard).join("");
+
+    // ── Attach phase header toggles ──
+    root.querySelectorAll(".phase-header").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const card = btn.closest(".phase-card");
+        const isOpen = card.classList.toggle("open");
+        btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
+      btn.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          btn.click();
+        }
+      });
+    });
+
+    // ── Attach check item toggles ──
+    root.querySelectorAll(".check-item").forEach(el => {
+      const id = el.dataset.itemId;
+      const activate = () => toggleItem(id, el);
+
+      el.addEventListener("click", activate);
+      el.addEventListener("keydown", e => {
+        if (e.key === " " || e.key === "Enter") {
+          e.preventDefault();
+          activate();
+        }
+      });
+    });
+
+    // ── Attach roving tabindex per phase body ──
+    root.querySelectorAll(".phase-body").forEach(attachRovingTabindex);
+
+    // ── Attach bulk buttons ──
+    root.querySelectorAll("[data-bulk-phase]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        bulkTogglePhase(btn.dataset.bulkPhase, btn.dataset.bulkDone === "true");
+      });
+    });
+
+    // ── Intersection Observer for lazy animation trigger ──
+    if ("IntersectionObserver" in window) {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.style.animationPlayState = "running";
+            obs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.08 });
+
+      root.querySelectorAll(".phase-card").forEach(card => {
+        card.style.animationPlayState = "paused";
+        obs.observe(card);
+      });
+    }
+
+    updateProgress();
+  }
+
+  // ── Sync toggle ──
+  document.getElementById("sync-checkbox").addEventListener("change", e => {
+    syncEnabled = e.target.checked;
+    e.target.parentElement.querySelector(".toggle-pill").setAttribute("aria-checked", syncEnabled);
+    if (syncEnabled) {
+      syncToServer(readStates);
+      showToast("🔄 Sync enabled — changes will push to server (stub)");
+    }
+  });
+
+  mount();
+  </script>
+</body>
+</html>
